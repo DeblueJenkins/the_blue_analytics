@@ -1,12 +1,18 @@
 import numpy as np
 from scipy.stats.mstats import gmean
+from abc import abstractmethod
 
-class MonteCarloPricer:
+class OptionPricer:
 
     def __init__(self, S: np.array):
         self.S = S
 
-class AsianOptionPricer(MonteCarloPricer):
+
+    @abstractmethod
+    def get_value(self):
+        pass
+
+class AsianOptionPricer(OptionPricer):
 
     def __init__(self, option_type: str = 'call', strike: str = 'fixed', averaging: str = 'continuous',
                  average='arithmetic', *args, **kwargs):
