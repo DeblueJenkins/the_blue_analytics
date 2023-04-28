@@ -37,17 +37,17 @@ class AsianOptionPricer(OptionPricer):
         if S.shape[1] % reset == 0:
 
             sampler = int(S.shape[1] / reset)
-            S_monitoring = np.zeros((S.shape[0], reset))
-            S_monitoring[:, 1:] = np.array([S[:, i * sampler] for i in np.arange(1, reset)]).T
-            S_monitoring[:, 0] = S[:, 0]
-            # S_monitoring = np.array([S[:, i * sampler] for i in np.arange(reset)]).T
+            # S_monitoring = np.zeros((S.shape[0], reset))
+            # S_monitoring[:, 1:] = np.array([S[:, i * sampler] for i in np.arange(1, reset)]).T
+            # S_monitoring[:, 0] = S[:, 0]
+            S_monitoring = np.array([S[:, i * sampler] for i in np.arange(reset)]).T
 
             if avg == 'arithmetic':
                 average = S_monitoring.mean(axis=1)
             elif avg == 'geometric':
                 average = np.power(np.product(S_monitoring, axis=1), 1/reset)
         else:
-            raise EOFError('Specify timesteps such that it is a multiple of reset times for discrete averaging')
+            raise UserWarning('Specify timesteps such that it is a multiple of reset times for discrete averaging')
         return average
 
 
@@ -72,12 +72,14 @@ class AsianOptionPricer(OptionPricer):
                 put_value = self.K * np.exp(-self.r * self.T) * norm.cdf(-d2) - self.S0 * np.exp(b_a - self.r) * norm.cdf(-d1)
 
             else:
+
                 raise UserWarning('Not implemented!')
 
 
         elif self.averaging == 'discrete':
 
                 if self.average == 'geometric':
+
                     warning_str = 'This is a closed-form solution, but sigma is assumed constant - not piecewise.'
                     warning_str += 'For more details, check Complete Guide for Option Pricing (Espeen Haag)'
                     warnings.warn(warning_str)
