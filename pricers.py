@@ -52,7 +52,9 @@ class AsianOptionPricer(OptionPricer):
         :return: (float, float): call and option value 
         """
         if self.averaging == 'continuous':
+
             if self.average == 'geometric':
+
                 print("Kemna and Vorst (1990)")
                 b_a = 0.5 * (b - self.sigma ** 2 / 6)
                 sigma_a = self.sigma / np.sqrt(3)
@@ -61,33 +63,45 @@ class AsianOptionPricer(OptionPricer):
                 d2 = d1 - sigma_a * np.sqrt(self.T)
                 call_value = self.S0 * np.exp(b_a - self.r) * norm.cdf(d1) - self.K * np.exp(-self.r * self.T) * norm.cdf(d2)
                 put_value = self.K * np.exp(-self.r * self.T) * norm.cdf(-d2) - self.S0 * np.exp(b_a - self.r) * norm.cdf(-d1)
+
             else:
-                raise UserWarning('Method not implemented')
+                raise UserWarning('Not implemented!')
+
 
         elif self.averaging == 'discrete':
 
-            if self.average == 'geometric':
+                if self.average == 'geometric':
 
-                raise UserWarning('Method not implemented')
+                    var_G = pow(self.sigma, 2) * (self.T * (2 * self.reset - 1) / (6 * self.reset))
+                    b = var_G / 2 + (self.r - b - pow(self.sigma, 2) / 2) * (self.T / 2)
+                    d1 = (np.log(self.S0 / self.K) + b + var_G/2) / np.sqrt(var_G)
+                    d2 = d1 - np.sqrt(var_G)
 
-            elif self.average == 'arithmetic':
-                print('Turnbull and Wakemane (1991)')
-                warnings.warn('This is an approximation for discrete arithmetic average')
-                # this is a simplification when valuation is only required at start of contract not inside the averaging period
-                M1 = (np.exp(b*self.T) - 1) / b * self.T
-                M2_first_term = (2 * np.exp((2 * b + self.sigma ** 2)*self.T)) / ((b + self.sigma ** 2) * (2 * b + self.sigma ** 2) * self.T ** 2)
-                M2_second_term = 2 / (b * self.T ** 2)
-                M2_third_term = 1 / ((2 * b) + self.sigma ** 2) - (np.exp(b * self.T)) / (b + self.sigma ** 2)
-                M2 = M2_first_term + M2_second_term * M2_third_term
-                # adjusted cost of carry
-                b_a = np.log(M1) / self.T
-                sigma_a = np.sqrt(np.log(M2) / self.T - 2 * b_a)
-                d1 = (np.log(self.S0 / self.K) + (b_a + 0.5 * sigma_a ** 2) * self.T) / (sigma_a * np.sqrt(self.T))
-                d2 = d1 - sigma_a * np.sqrt(self.T)
-                call_value = self.S0 * np.exp((b_a - self.r) * self.T) * norm.cdf(d1) - self.K * np.exp(-self.r * self.T) * norm.cdf(d2)
-                put_value = self.K * np.exp(-self.r * self.T) * norm.cdf(-d2) - self.S0 * np.exp((b_a - self.r) * self.T) * norm.cdf(-d1)
+                    call_value = np.exp(-self.r * self.T) * (self.S0 * np.exp(b) * norm.cdf(d1) - self.K * norm.cdf(d2))
+                    put_value = np.exp(-self.r * self.T) * (self.K * norm.cdf(-d2) - self.S0 * np.exp(b) * norm.cdf(-d1))
 
+                elif self.average == 'arithmetic':
 
+                    print('Turnbull and Wakemane (1991)')
+                    warnings.warn('This is an approximation for discrete arithmetic average')
+                    # this is a simplification when valuation is only required at start of contract not inside the averaging period
+                    M1 = (np.exp(b*self.T) - 1) / b * self.T
+                    M2_first_term = (2 * np.exp((2 * b + self.sigma ** 2)*self.T)) / ((b + self.sigma ** 2) * (2 * b + self.sigma ** 2) * self.T ** 2)
+                    M2_second_term = 2 / (b * self.T ** 2)
+                    M2_third_term = 1 / ((2 * b) + self.sigma ** 2) - (np.exp(b * self.T)) / (b + self.sigma ** 2)
+                    M2 = M2_first_term + M2_second_term * M2_third_term
+                    # adjusted cost of carry
+                    b_a = np.log(M1) / self.T
+                    sigma_a = np.sqrt(np.log(M2) / self.T - 2 * b_a)
+                    d1 = (np.log(self.S0 / self.K) + (b_a + 0.5 * sigma_a ** 2) * self.T) / (sigma_a * np.sqrt(self.T))
+                    d2 = d1 - sigma_a * np.sqrt(self.T)
+                    call_value = self.S0 * np.exp((b_a - self.r) * self.T) * norm.cdf(d1) - self.K * np.exp(-self.r * self.T) * norm.cdf(d2)
+                    put_value = self.K * np.exp(-self.r * self.T) * norm.cdf(-d2) - self.S0 * np.exp((b_a - self.r) * self.T) * norm.cdf(-d1)
+
+                else:
+                    raise UserWarning('When averaging is discrete, average can either be geometric or arithmetic')
+        else:
+            raise UserWarning('Averaging can only be "geometric" or "discrete"')
 
         return call_value, put_value
 

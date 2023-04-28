@@ -141,8 +141,8 @@ def main(run='simulation_exercise'):
             "T": 1,
             "sigma": sigma,
             "rf": r,
-            "n_steps": 1200,
-            "n_sims": 10000,
+            "n_steps": 12000,
+            "n_sims": 50000,
             "seed": 2023,
             "scheme": 'Euler-Maruyama'
         }
@@ -171,7 +171,7 @@ def main(run='simulation_exercise'):
             'strike': 'fixed',
             'S0': S0,
             'averaging': 'discrete',
-            'average': 'arithmetic',
+            'average': 'geometric',
             'reset': 12,
             'K': K # and it will be ATM option
         }
