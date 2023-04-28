@@ -14,10 +14,10 @@ params = {
     "T": 1,
     "sigma": sigma,
     "rf": r,
-    "n_steps": 12000,
-    "n_sims": 10000,
+    "n_steps": 12,
+    "n_sims": 30000,
     "seed": 2023,
-    "scheme": 'Milstein'
+    "scheme": 'Closed-Form'
 }
 
 model = GeometricBrownianMotionSimulator(**params)

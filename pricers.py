@@ -33,18 +33,25 @@ class AsianOptionPricer(OptionPricer):
 
 
     def _get_discrete_average(self, S, reset, avg):
+        warnings.warn('This method is imprecise if reset!=ntimesteps in simulation. It needs to be fixed.')
         if S.shape[1] % reset == 0:
-            S_monitoring = np.array([S[:, i + self.reset] for i in range(S.shape[1] - reset)])
+
+            sampler = int(S.shape[1] / reset)
+            S_monitoring = np.zeros((S.shape[0], reset))
+            S_monitoring[:, 1:] = np.array([S[:, i * sampler] for i in np.arange(1, reset)]).T
+            S_monitoring[:, 0] = S[:, 0]
+            # S_monitoring = np.array([S[:, i * sampler] for i in np.arange(reset)]).T
+
             if avg == 'arithmetic':
-                average = S_monitoring.mean(axis=0)
+                average = S_monitoring.mean(axis=1)
             elif avg == 'geometric':
-                average = gmean(S_monitoring, axis=0)
+                average = np.power(np.product(S_monitoring, axis=1), 1/reset)
         else:
             raise EOFError('Specify timesteps such that it is a multiple of reset times for discrete averaging')
         return average
 
 
-    def get_value(self, q = 0):
+    def get_value(self, q = 0, t1 = 0):
 
         b = self.r - q
         """
@@ -71,9 +78,12 @@ class AsianOptionPricer(OptionPricer):
         elif self.averaging == 'discrete':
 
                 if self.average == 'geometric':
-
-                    var_G = pow(self.sigma, 2) * (self.T * (2 * self.reset - 1) / (6 * self.reset))
-                    b = var_G / 2 + (self.r - q - pow(self.sigma, 2) / 2) * (self.T / 2)
+                    warning_str = 'This is a closed-form solution, but sigma is assumed constant - not piecewise.'
+                    warning_str += 'For more details, check Complete Guide for Option Pricing (Espeen Haag)'
+                    warnings.warn(warning_str)
+                    avrg_time = (self.T - t1)
+                    var_G = pow(self.sigma, 2) * (t1 + avrg_time * (2 * self.reset - 1) / (6 * self.reset))
+                    b = var_G / 2 + (self.r - q - pow(self.sigma, 2) / 2) * (t1 + avrg_time / 2)
                     d1 = (np.log(self.S0 / self.K) + b + var_G/2) / np.sqrt(var_G)
                     d2 = d1 - np.sqrt(var_G)
 
@@ -82,9 +92,10 @@ class AsianOptionPricer(OptionPricer):
 
                 elif self.average == 'arithmetic':
 
-                    print('Turnbull and Wakemane (1991)')
-                    warnings.warn('This is an approximation for discrete arithmetic average')
+                    warnings.warn('This is an approximation for discrete arithmetic average (Turnbull and Wakemane (1991))')
+
                     # this is a simplification when valuation is only required at start of contract not inside the averaging period
+
                     M1 = (np.exp(b*self.T) - 1) / b * self.T
                     M2_first_term = (2 * np.exp((2 * b + self.sigma ** 2)*self.T)) / ((b + self.sigma ** 2) * (2 * b + self.sigma ** 2) * self.T ** 2)
                     M2_second_term = 2 / (b * self.T ** 2)
@@ -107,36 +118,38 @@ class AsianOptionPricer(OptionPricer):
 
     def get_value_mc(self, S: np.ndarray):
 
-            if self.average == 'arithmetic':
-                if self.averaging == 'continuous':
-                    average = S.mean(axis=1)
-                elif self.averaging == 'discrete':
-                    self.reset = self.reset
-                    average = self._get_discrete_average(S, self.reset, self.average)
+        if self.average == 'arithmetic':
+            average = S.mean(axis=1)
+            # if self.averaging == 'continuous':
+            #     average = S.mean(axis=1)
+            # elif self.averaging == 'discrete':
+            #     self.reset = self.reset
+            #     average = self._get_discrete_average(S, self.reset, self.average)
 
-            elif self.average == 'geometric':
-                if self.averaging == 'continuous':
-                    average = gmean(S, axis=1)
-                elif self.averaging == 'discrete':
-                    self.reset = self.reset
-                    average = self._get_discrete_average(S, self.reset, self.average)
+        elif self.average == 'geometric':
+            average = np.power(np.product(S, axis=1), 1/self.reset)
+            # if self.averaging == 'continuous':
+            #     average = gmean(S, axis=1)
+            # elif self.averaging == 'discrete':
+            #     self.reset = self.reset
+            #     average = self._get_discrete_average(S, self.reset, self.average)
 
 
-            if self.strike == 'fixed':
-                if self.K is None:
-                    raise EOFError('User must provide strike price K for a fixed-style Asian')
-                else:
-                    call_payoff = np.mean(np.maximum(0, average-self.K))
-                    put_payoff = np.mean(np.maximum(0, self.K-average))
-            elif self.strike == 'float':
-                call_payoff = np.mean(np.maximum(0, S[:, -1] - average))
-                put_payoff = np.mean(np.maximum(0, average - S[:, -1]))
+        if self.strike == 'fixed':
+            if self.K is None:
+                raise EOFError('User must provide strike price K for a fixed-style Asian')
             else:
-                raise EOFError('User must provide the style of the Asian option')
+                call_payoff = np.mean(np.maximum(0, average-self.K))
+                put_payoff = np.mean(np.maximum(0, self.K-average))
+        elif self.strike == 'float':
+            call_payoff = np.mean(np.maximum(0, S[:, -1] - average))
+            put_payoff = np.mean(np.maximum(0, average - S[:, -1]))
+        else:
+            raise EOFError('User must provide the style of the Asian option')
 
 
-            call_value = np.exp(-self.r*self.T) * call_payoff
-            put_value = np.exp(-self.r*self.T) * put_payoff
+        call_value = np.exp(-self.r*self.T) * call_payoff
+        put_value = np.exp(-self.r*self.T) * put_payoff
 
-            return call_value, put_value
+        return call_value, put_value
 

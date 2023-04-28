@@ -12,7 +12,7 @@ class MonteCarloSimulator:
         self.seed = seed
         self.scheme = scheme
         self.T = T
-        self.dt = self.T / self.n_steps
+        self.dt = self.T / (self.n_steps - 1)
 
 
 class GeometricBrownianMotionSimulator(MonteCarloSimulator):
