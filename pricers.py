@@ -44,9 +44,9 @@ class AsianOptionPricer(OptionPricer):
         return average
 
 
-    def get_value(self, b = None):
-        if b is None:
-            b = self.r
+    def get_value(self, q = 0):
+
+        b = self.r - q
         """
         :param b: cost of carry, optional, if None then risk-free rate is the only cost of carry 
         :return: (float, float): call and option value 
@@ -73,7 +73,7 @@ class AsianOptionPricer(OptionPricer):
                 if self.average == 'geometric':
 
                     var_G = pow(self.sigma, 2) * (self.T * (2 * self.reset - 1) / (6 * self.reset))
-                    b = var_G / 2 + (self.r - b - pow(self.sigma, 2) / 2) * (self.T / 2)
+                    b = var_G / 2 + (self.r - q - pow(self.sigma, 2) / 2) * (self.T / 2)
                     d1 = (np.log(self.S0 / self.K) + b + var_G/2) / np.sqrt(var_G)
                     d2 = d1 - np.sqrt(var_G)
 
