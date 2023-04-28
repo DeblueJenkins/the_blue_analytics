@@ -23,15 +23,18 @@ class GeometricBrownianMotionSimulator(MonteCarloSimulator):
         self.S0 = S0
         self.sigma = sigma
         self.rf = rf
+        self.get_theoretical_moments()
 
-    # these are static methods since numba/cuda will not work otherwise
+
+# these are static methods since numba/cuda will not work otherwise
     # for future development
 
     def get_theoretical_moments(self):
         self.theoretical_mean = self.S0 * np.exp(self.rf * self.T)
-        # self.theoretical_mean = np.exp(np.log(self.S0) + (self.rf - self.sigma ** 2 / 2) * self.T)
         self.theoretical_variance = self.S0 ** 2 * np.exp(2 * self.rf * self.T) * (np.exp(self.sigma ** 2 * self.T) - 1)
-        # self.theoretical_variance = np.exp(self.sigma ** 2 * self.T)
+
+        # ES3 = self.S0 ** 3 * np.exp(3 * self.rf + 3 * self.sigma)
+        # self.theoretical_skewness = (ES3 - 3 * self.rf * self.sigma ** 2 + 2 * self.rf ** 3) / self.sigma ** 3
 
     @staticmethod
     def _closed_form(S_prev, rf, dt, sigma, normal):
@@ -55,6 +58,11 @@ class GeometricBrownianMotionSimulator(MonteCarloSimulator):
         return euler_term + adjustment
 
     @staticmethod
+    def _closed_form_soln(S_prev, rf, dt, sigma, normal):
+        W = normal * np.sqrt(dt)
+        return S_prev * np.exp((rf - sigma ** 2 / 2) * dt + sigma * W)
+
+    @staticmethod
     def _simulate(S0, rf, dt, sigma, normal, n_sims, n_steps, func: object):
 
         S = np.zeros((n_sims, n_steps))
@@ -64,6 +72,8 @@ class GeometricBrownianMotionSimulator(MonteCarloSimulator):
             S[:,i+1] = func(S[:,i], rf, dt, sigma, normal[:,i])
 
         return S
+
+
     def simulate(self):
         np.random.seed(self.seed)
         normal = np.random.normal(0, 1, size=(self.n_sims, self.n_steps))
@@ -75,13 +85,9 @@ class GeometricBrownianMotionSimulator(MonteCarloSimulator):
         elif self.scheme == 'Runge-Kutta':
             func = self._runge_kutta
         else:
-            self.get_theoretical_moments()
-            self.S = np.zeros((self.n_sims, self.n_steps))
+            func = self._closed_form_soln
 
-            self.S[:,-1] = self.S0 * np.exp((self.rf - self.sigma ** 2 / 2) * self.T + self.sigma * np.sqrt(self.T) * normal[:,0])
-
-        if self.scheme is not None:
-            self.S = self._simulate(self.S0, self.rf, self.dt, self.sigma, normal, self.n_sims, self.n_steps, func)
+        self.S = self._simulate(self.S0, self.rf, self.dt, self.sigma, normal, self.n_sims, self.n_steps, func)
 
 
     def plot_paths(self):
