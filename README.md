@@ -5,40 +5,35 @@ This is a Asian option pricing library.
 
 Simulation of GBM can be made in various ways. In this exercise, I have used the suggested methods (Closed-form solution, Euler-Maruyama, Milstein) as well as the Runge-Kutta method. Equations \ref{eq:closed} through \ref{eq:runge} represent the discretization schemes, respectively.  
 
-\begin{equation}
+$$
 S_{t+\delta t} = S_{t}e^{(r - \frac{\sigma^{2}}{2})\delta t + \sigma\phi\delta t}
 \label{eq:closed}
-\end{equation}
+$$
 
-\begin{equation}
+$$
 S_{t+\delta t} = S_{t}(1 + r\delta t + \sigma \phi \sqrt{\delta t})
-\label{eq:euler}
-\end{equation}
+$$
 
-\begin{equation}
+$$
 S_{t+\delta t} = S_{t}(1 + r\delta t + \sigma\phi\sqrt{\delta t} + \frac{1}{2} \sigma^{2}((\phi\sqrt{\delta t})^{2}) - \delta t)
-\label{eq:milstein}
-\end{equation}
+$$
 
-\begin{equation}
+$$
 S_{t+\delta t} = S_{t}(1 + r\delta t + \sigma \phi \sqrt{\delta t}) + \frac{1}{2}(\sigma(\hat{S} - S_{t}))((\phi\delta t)^{2} - \delta t)\frac{1}{\sqrt{\delta t}}
-\label{eq:runge}
-\end{equation}
+$$
 
 where, $\hat{S} = S_{t}(1 + r\delta t + \sigma\sqrt{\delta t})$, while the Brownian variable is represented by $\phi\delta t$, $\phi$ being a standard normal variable. 
 
 
 The theoretical mean and variance of a Geometric Brownian motion are represented by Equations \ref{eq:theomean} and \ref{eq:theovar}. 
 
-\begin{equation}
+$$
 \mathbb{E}[S] = S_{0}e^{rT}
-\label{eq:theomean}
-\end{equation}
+$$
 
-\begin{equation}
+$$
 \mathbb{V}[S] = S_{0}^{2}e^{2rT}(e^{\sigma^{2}T} - 1)
-\label{eq:theovar}
-\end{equation}
+$$
 
 
 After simulating using all of the aforementioned methods, I observe some differences. Table \ref{tab:simulated_dist} displays the variance and mean errors (in \%) between the simulation and the theoretical values. Interestingly, when the number of simulations is very large, the closed-form solution is the least accurate both in terms of variance and mean estimation. When the number of simulations is lower, the closed-form solution is more accurate in terms of variance, but less accurate in terms of mean. Overall, the Euler-Maruyama method seems to be outperforming the rest when the number of simulations is very large, but it can only outperform in terms of mean estimation when the number of simulations is smaller. 
