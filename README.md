@@ -13,7 +13,7 @@ There are currently four simulation methods implemented:
 They are represented by the following equations:
 
 $$
-S_{t+\delta t} = S_{t}e^{(r - \frac{\sigma^{2}}{2})\delta t + \sigma\phi\delta t}
+S_{t+\delta t} = S_{t}e^{(r - \frac{\sigma^{2}}{2})\delta t + \sigma\phi\\sqrt{delta t}}
 $$
 
 $$
