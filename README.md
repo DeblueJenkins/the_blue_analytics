@@ -1,6 +1,5 @@
-# the_blue_analytics
+# This is an (Asian) option pricing library.
 
-##This is a Asian option pricing library.
 
 ### Monte-Carlo simulation using Geometric Brownian Motion
 
@@ -26,7 +25,7 @@ S_{t+\delta t} = S_{t}(1 + r\delta t + \sigma\phi\sqrt{\delta t} + \frac{1}{2} \
 $$
 
 $$
-S_{t+\delta t} = S_{t}(1 + r\delta t + \sigma \phi \sqrt{\delta t}) + \frac{1}{2}(\sigma(\hat{S} - S_{t}))((\phi\delta t)^{2} - \delta t)\frac{1}{\sqrt{\delta t}}
+S_{t+\delta t} = S_{t}(1 + r\delta t + \sigma \phi \sqrt{\delta t}) + \frac{1}{2}(\sigma(\hat{S} - S_{t}))((\phi\sqrt{\delta t})^{2} - \delta t)\frac{1}{\sqrt{\delta t}}
 $$
 
 where, $\hat{S} = S_{t}(1 + r\delta t + \sigma\sqrt{\delta t})$, while the Brownian variable is represented by $\phi\delta t$, $\phi$ being a standard normal variable. 
@@ -52,7 +51,6 @@ For the continuous geometric Asian option, the library uses the Kemna and Vorst 
 
 $$
 C = e^{-(b_{A}-r)T}SN(d1) - e^{-rT}N(d2)
-\label{eq:cont_geo_call}
 $$
 
 $$
