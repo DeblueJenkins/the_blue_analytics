@@ -58,15 +58,15 @@ P = e^{-rT}KN(-d2) - e^{-(b_{A}-r)T}SN(-d1)
 $$
 
 $$
-d_{1} &= \frac{ln(S/K)+(b_{A}+\sigma_{A}^{2}/2)T}{\sigma_{A}\sqrt{T}}\\
-d_{2} &= d_{1} - \sigma_{A}\sqrt{T}
+d_{1} = \frac{ln(S/K)+(b_{A}+\sigma_{A}^{2}/2)T}{\sigma_{A}\sqrt{T}}\\
+d_{2} = d_{1} - \sigma_{A}\sqrt{T}
 $$
 
 where, $b_{A}$ is the adjusted cost-of-carry and $\sigma_{A}$ is the adjusted volatility as given by:
 
 $$
-\sigma_{A} &= \frac{\sigma}{\sqrt{3}}\\
-b_{A} &= \frac{1}{2}\bigg( b - \frac{\sigma^{2}}{6}\bigg)\\ 
+\sigma_{A} = \frac{\sigma}{\sqrt{3}}\\
+b_{A} = \frac{1}{2}\bigg( b - \frac{\sigma^{2}}{6}\bigg)\\ 
 $$
 
 #### Discrete Geometric
@@ -82,15 +82,15 @@ P = e^{-rT}KN(-d2) - e^{-rT}SN(-d1)
 $$
 
 $$
-d1 &= \frac{ln(S/K) + b_{G} + \sigma_{G}^{2}/2}{\sigma_{G}}\\
-d2 &= d1 - \sigma_{G}
+d1 = \frac{ln(S/K) + b_{G} + \sigma_{G}^{2}/2}{\sigma_{G}}\\
+d2 = d1 - \sigma_{G}
 $$
 
 where, again, $b_{G}$ and $\sigma_{G}$ are the adjusted cost of carry and volatility, given by:
 
 $$
-b_{G} &= \frac{\sigma^{2}_{G}}{2 + (r-\frac{\sigma^{2}}{2})(t_{1}+\frac{T-t_{1}}{2})} \\
-\sigma_{G} &= \sqrt{\sigma^{2}(t_{1}+(T-t_{1})\frac{2n-1}{6n})}
+b_{G} = \frac{\sigma^{2}_{G}}{2 + (r-\frac{\sigma^{2}}{2})(t_{1}+\frac{T-t_{1}}{2})} \\
+\sigma_{G} = \sqrt{\sigma^{2}(t_{1}+(T-t_{1})\frac{2n-1}{6n})}
 $$
 
 #### Continuous and Discrete Arithmetic
@@ -106,22 +106,22 @@ P \approx Ke^{-rT}N(-d_{2}) - Se^{b_{A}-r}TN(-d_{1})
 $$
 
 $$
-d_{1} &= \frac{ln(S/K)+(b_{A}+\sigma_{A}^{2}/2)T}{\sigma_{A}\sqrt{T}}\\
-d_{2} &= d_{1} - \sigma_{A}\sqrt{T}
+d_{1} = \frac{ln(S/K)+(b_{A}+\sigma_{A}^{2}/2)T}{\sigma_{A}\sqrt{T}}\\
+d_{2} = d_{1} - \sigma_{A}\sqrt{T}
 $$
 
 where, $b_{A}$ and $\sigma_{A}$ are the adjusted cost of carry and volatility, and $b$ is the regular cost of carry, which in the simplest case of a non-dividend paying stock is simply the risk-free rate $b=r$:
 
 $$
-\sigma_{A} &= \sqrt{\frac{ln(M_{2})}{T} - 2b_{A}} \\
-b_{A} &= \frac{M_{1}}{T} \\
+\sigma_{A} = \sqrt{\frac{ln(M_{2})}{T} - 2b_{A}} \\
+b_{A} = \frac{M_{1}}{T} \\
 $$
 
 The exact first and second moments, $M_{1}$ and $M_{2}$ are given by:
 
 $$
-M_{1} &= \frac{e^{bT} - e^{bt_{1}}}{b(T-t_{1})} \\
-M_{2} &= \frac{2e^{(2b+\sigma^{2})T}}{(b+\sigma^{2})(2b+\sigma^{2})(T-t_{1})^{2}} + \frac{2e^{(2b+\sigma^{2}})t_{1}}{b(T-t_{1})^{2}}\bigg(\frac{1}{2b+\sigma^{2}} - \frac{e^{b(T-t_{1})}}{b+\sigma^{2}}\bigg) \\
+M_{1} = \frac{e^{bT} - e^{bt_{1}}}{b(T-t_{1})} \\
+M_{2} = \frac{2e^{(2b+\sigma^{2})T}}{(b+\sigma^{2})(2b+\sigma^{2})(T-t_{1})^{2}} + \frac{2e^{(2b+\sigma^{2}})t_{1}}{b(T-t_{1})^{2}}\bigg(\frac{1}{2b+\sigma^{2}} - \frac{e^{b(T-t_{1})}}{b+\sigma^{2}}\bigg) \\
 $$
 	
 where, $t_{1}$ is the time to the beginning of the averaging period. In our case, $t_{1}=0$. 
