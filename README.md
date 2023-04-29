@@ -28,7 +28,7 @@ $$
 S_{t+\delta t} = S_{t}(1 + r\delta t + \sigma \phi \sqrt{\delta t}) + \frac{1}{2}(\sigma(\hat{S} - S_{t}))((\phi\sqrt{\delta t})^{2} - \delta t)\frac{1}{\sqrt{\delta t}}
 $$
 
-where, $\hat{S} = S_{t}(1 + r\delta t + \sigma\sqrt{\delta t})$, while the Brownian variable is represented by $\phi\delta t$, $\phi$ being a standard normal variable. 
+where, $\hat{S} = S_{t}(1 + r\delta t + \sigma\sqrt{\delta t})$, while the Brownian variable is represented by $\phi\sqrt{\delta t}$, $\phi$ being a standard normal variable. 
 
 
 The theoretical mean and variance of a Geometric Brownian motion are represented by Equations \ref{eq:theomean} and \ref{eq:theovar}. 
