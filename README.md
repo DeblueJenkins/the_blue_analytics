@@ -2,6 +2,9 @@
 
 This is a Asian option pricing library.
 
+There are currently four simulation methods implemented:
+
+* 
 
 Simulation of GBM can be made in various ways. In this exercise, I have used the suggested methods (Closed-form solution, Euler-Maruyama, Milstein) as well as the Runge-Kutta method. Equations \ref{eq:closed} through \ref{eq:runge} represent the discretization schemes, respectively.  
 
