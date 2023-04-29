@@ -3,6 +3,25 @@ from scipy.stats.mstats import gmean
 from scipy.stats import norm
 from abc import abstractmethod
 import warnings
+from numba import njit
+
+
+def turnbull_wakemane_approx(S0, K, sigma, b, r, T):
+
+    M1 = (np.exp(b*T) - 1) / b * T
+    M21 = (2 * np.exp((2 * b + sigma ** 2)*T)) / ((b + sigma ** 2) * (2 * b + sigma ** 2) * T ** 2)
+    M22 = 2 / (b * T ** 2)
+    M23 = 1 / ((2 * b) + sigma ** 2) - (np.exp(b * T)) / (b + sigma ** 2)
+    M2 = M21 + M22 * M23
+    # adjusted cost of carry
+    b_a = np.log(M1) / T
+    sigma_a = np.sqrt(np.log(M2) / T - 2 * b_a)
+    d1 = (np.log(S0 / K) + (b_a + 0.5 * sigma_a ** 2) * T) / (sigma_a * np.sqrt(T))
+    d2 = d1 - sigma_a * np.sqrt(T)
+    call_value = S0 * np.exp((b_a - r) * T) * norm.cdf(d1) - K * np.exp(-r * T) * norm.cdf(d2)
+    put_value = K * np.exp(-r * T) * norm.cdf(-d2) - S0 * np.exp((b_a - r) * T) * norm.cdf(-d1)
+
+    return call_value, put_value
 
 class OptionPricer:
 
@@ -73,7 +92,9 @@ class AsianOptionPricer(OptionPricer):
 
             else:
 
-                raise UserWarning('Not implemented!')
+                warnings.warn('This is an approximation for discrete arithmetic average (Turnbull and Wakemane (1991))')
+                # this is a simplification when valuation is only required at start of contract not inside the averaging period
+                call_value, put_value = turnbull_wakemane_approx(self.S0, self.K, self.sigma, b, self.r, self.T)
 
 
         elif self.averaging == 'discrete':
@@ -95,21 +116,10 @@ class AsianOptionPricer(OptionPricer):
                 elif self.average == 'arithmetic':
 
                     warnings.warn('This is an approximation for discrete arithmetic average (Turnbull and Wakemane (1991))')
-
                     # this is a simplification when valuation is only required at start of contract not inside the averaging period
+                    call_value, put_value = turnbull_wakemane_approx(self.S0, self.K, self.sigma, b, self.r, self.T)
 
-                    M1 = (np.exp(b*self.T) - 1) / b * self.T
-                    M2_first_term = (2 * np.exp((2 * b + self.sigma ** 2)*self.T)) / ((b + self.sigma ** 2) * (2 * b + self.sigma ** 2) * self.T ** 2)
-                    M2_second_term = 2 / (b * self.T ** 2)
-                    M2_third_term = 1 / ((2 * b) + self.sigma ** 2) - (np.exp(b * self.T)) / (b + self.sigma ** 2)
-                    M2 = M2_first_term + M2_second_term * M2_third_term
-                    # adjusted cost of carry
-                    b_a = np.log(M1) / self.T
-                    sigma_a = np.sqrt(np.log(M2) / self.T - 2 * b_a)
-                    d1 = (np.log(self.S0 / self.K) + (b_a + 0.5 * sigma_a ** 2) * self.T) / (sigma_a * np.sqrt(self.T))
-                    d2 = d1 - sigma_a * np.sqrt(self.T)
-                    call_value = self.S0 * np.exp((b_a - self.r) * self.T) * norm.cdf(d1) - self.K * np.exp(-self.r * self.T) * norm.cdf(d2)
-                    put_value = self.K * np.exp(-self.r * self.T) * norm.cdf(-d2) - self.S0 * np.exp((b_a - self.r) * self.T) * norm.cdf(-d1)
+
 
                 else:
                     raise UserWarning('When averaging is discrete, average can either be geometric or arithmetic')
@@ -129,7 +139,9 @@ class AsianOptionPricer(OptionPricer):
             #     average = self._get_discrete_average(S, self.reset, self.average)
 
         elif self.average == 'geometric':
-            average = np.power(np.product(S, axis=1), 1/self.reset)
+            average = gmean(S, axis=1)
+            # average = np.power(np.product(S, axis=1), 1/self.reset)
+
             # if self.averaging == 'continuous':
             #     average = gmean(S, axis=1)
             # elif self.averaging == 'discrete':

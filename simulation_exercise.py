@@ -128,70 +128,8 @@ def main(run='simulation_exercise'):
         plt.legend()
         plt.show()
 
-    elif run == 'comparison_exercise':
-
-        S0 = 100
-        sigma = 0.2
-        r = 0.05
-        T = 1
-        fig = plt.figure(figsize=(11,8))
-
-        params = {
-            "S0": S0,
-            "T": 1,
-            "sigma": sigma,
-            "rf": r,
-            "n_steps": 12000,
-            "n_sims": 50000,
-            "seed": 2023,
-            "scheme": 'Euler-Maruyama'
-        }
-
-        model = GeometricBrownianMotionSimulator(**params)
-        model.simulate()
-        model.get_theoretical_moments()
-
-        # # we need to split in order to compute mu
-        # split_idx = int(params['n_steps'] * 0.3)
-        # synthetic_historical_price, simulated_price = model.S[:, :split_idx], model.S[:, split_idx:]
-        # synthetic_historical_returns = np.log(synthetic_historical_price[1:, :] / synthetic_historical_price[:-1, :])
-        # mu = synthetic_historical_returns.mean(axis=1).mean()
-
-        calls = []
-        calls_turnbull = []
-        puts = []
-        puts_turnbull = []
-        strikes = []
-
-        K = 100
-        option_params = {
-            'r': r,
-            'T': T,
-            'sigma': sigma,
-            'strike': 'fixed',
-            'S0': S0,
-            'averaging': 'discrete',
-            'average': 'geometric',
-            'reset': 12,
-            'K': K # and it will be ATM option
-        }
-
-        pricer = AsianOptionPricer(**option_params)
-        call_price, put_price = pricer.get_value_mc(S=model.S)
-        call_price_cf, put_price_cf = pricer.get_value()
-
-        print(f'Asian call option: {call_price:0.4f}')
-        print(f'Asian put option: {put_price:0.4f}')
-        print(f'Asian call option (closed-form): {call_price_cf:0.4f}')
-        print(f'Asian put option (closed-form): {put_price_cf:0.4f}')
-
-
-
-
-
 if __name__ == '__main__':
 
-    main('comparison_exercise')
-
+    main(run='simulation_exercise')
 
 

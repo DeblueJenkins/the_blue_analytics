@@ -18,7 +18,7 @@ def beta(h, Q):
 def gamma(h, P):
     return 1 - h/2 * P
 
-def y(x):
+def y_func(x):
     term1 = 38.23189732 * np.exp(-x)
     term2 = -118.70318394 * np.exp(-2*x)
     polyterm = 2*x ** 2 - 6*x + 7
@@ -39,8 +39,8 @@ for cnt, n in enumerate(np.arange(10, 105, 5)):
     a = 1
     b = 2
 
-    w0 = 1
-    wn = 6
+    y0 = 1
+    yn = 6
 
     h = (b - a) / n
 
@@ -57,7 +57,7 @@ for cnt, n in enumerate(np.arange(10, 105, 5)):
     A_matrix[0,0] = beta(h,Q)
     A_matrix[0,1] = alpha(h, P)
 
-    b_vector[0] = -gamma(h,P) * w0 + h ** 2 * f(xi[0])
+    b_vector[0] = -gamma(h,P) * y0 + h ** 2 * f(xi[0])
 
     # Set intermediate rows
     for i in np.arange(1, n-1):
@@ -73,18 +73,19 @@ for cnt, n in enumerate(np.arange(10, 105, 5)):
     A_matrix[-1,-1] = beta(h, P)
     A_matrix[-1,-2] = gamma(h,P)
 
-    b_vector[-1] = h ** 2 * f(xi[-1]) - alpha(h,P) * wn
+    b_vector[-1] = h ** 2 * f(xi[-1]) - alpha(h,P) * yn
 
     # Solve system
 
-    w = solve(A_matrix, b_vector)
+    y = solve(A_matrix, b_vector)
 
 
 
     if cnt == 0:
         plt.plot(xi, y(xi), label='analytic soln', color='red')
-    plt.plot(xi, np.insert(w, 0, w0), label=f'n={n}', ls=':')
+    plt.plot(xi, np.insert(y, 0, y0), label=f'n={n}', ls=':')
 
 plt.legend()
 plt.grid(True)
+plt.savefig(r'plots\ode_solution_finite_differences.png')
 plt.show()
