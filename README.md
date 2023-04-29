@@ -7,7 +7,6 @@ Simulation of GBM can be made in various ways. In this exercise, I have used the
 
 $$
 S_{t+\delta t} = S_{t}e^{(r - \frac{\sigma^{2}}{2})\delta t + \sigma\phi\delta t}
-\label{eq:closed}
 $$
 
 $$
@@ -36,45 +35,7 @@ $$
 $$
 
 
-After simulating using all of the aforementioned methods, I observe some differences. Table \ref{tab:simulated_dist} displays the variance and mean errors (in \%) between the simulation and the theoretical values. Interestingly, when the number of simulations is very large, the closed-form solution is the least accurate both in terms of variance and mean estimation. When the number of simulations is lower, the closed-form solution is more accurate in terms of variance, but less accurate in terms of mean. Overall, the Euler-Maruyama method seems to be outperforming the rest when the number of simulations is very large, but it can only outperform in terms of mean estimation when the number of simulations is smaller. 
-
-I have also timed the simulations. In both cases, $n=[10,000; 100,000]$, the Euler-Maruyama method is the fastest, finishing in 0.473 and 7.309, respectively. The Milstein method comes second with 0.481 and 7.305, respectively, while the closed-form solution is actually slower with 0.533 and 8.225 seconds, respectively. 
-	
-\begin{table}[h!]
-\centering
-	\begin{tabular}{lllll}
-	\toprule
-	Method & \multicolumn{2}{c}{$n=10000$} & \multicolumn{2}{c}{$n=100000$}\\
-	\midrule
-	{} & var error & mean error & var error & mean error \\
-	Closed-form & 2.5331 & 0.0710 & 0.1675 & 0.0235 \\
-	Euler-Maruyama & 2.5498 & 0.0699 & 0.1549 & 0.0229 \\
-	Runge-Kutta & 2.5431 & 0.0712 & 0.1571 & 0.0234 \\
-	Milstein & 2.5432 & 0.0712 & 0.1570 & 0.0234 \\
-	\bottomrule
-	\end{tabular}
-	\caption{\label{tab:simulated_dist} \%-errors in mean and variance of the terminal distribution (last step) compared to the theoretical mean and variance of a GBM given the various methods. Number of time-steps is 1000. $n$ represents the number of simulations.}
-\end{table}
-
-Figure
-
-\begin{figure*}[t!]
-    \centering
-    \begin{subfigure}[t]{0.5\textwidth}
-        \centering
-        \includegraphics[height=1.2in]{distplots_gbm_sims.png}
-        \caption{Distribution plots with n=10,000}
-    \end{subfigure}%
-    ~ 
-    \begin{subfigure}[t]{0.5\textwidth}
-        \centering
-        \includegraphics[height=1.2in]{distplots_gbm_sims_large_number.png}
-        \caption{Distribution plots with n=100,000}
-    \end{subfigure}
-    \caption{Caption place holder}
-\end{figure*}
-
-I now continue with the pricing of Asian options. I will first introduce a few approximations and closed-form solutions for various specifications of an Asian option contract. This will help me to determine whether my Monte-Carlo simulation are precise. 
+I will first introduce a few approximations and closed-form solutions for various specifications of an Asian option contract. This will help me to determine whether my Monte-Carlo simulation are precise. 
 
 \subsection{Continuous Geometric}
 
